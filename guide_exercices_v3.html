@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide Séances — J92→J98</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0e10;
+    --surface: #14161a;
+    --card: #1a1d23;
+    --card2: #1f2229;
+    --border: #272b35;
+    --accent: #e8f542;
+    --accent2: #42f5a1;
+    --accent3: #f5824a;
+    --accent4: #7b8cff;
+    --text: #eceef2;
+    --muted: #6b7280;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    padding: 36px 24px 22px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+  h1 { font-family: 'Syne', sans-serif; font-size: clamp(24px, 5vw, 40px); font-weight: 800; letter-spacing: -1px; line-height: 1.05; }
+  h1 span { color: var(--accent); }
+  .pills { display: flex; flex-direction: column; gap: 5px; align-items: flex-end; }
+  .pill { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; padding: 4px 11px; border-radius: 100px; letter-spacing: .8px; white-space: nowrap; }
+  .pill-y { background: var(--accent); color: #0d0e10; }
+  .pill-o { background: var(--accent3); color: #fff; }
+  .pill-b { background: var(--accent4); color: #fff; }
+  .subtitle { margin-top: 10px; color: var(--muted); font-size: 13px; }
+
+  /* LEGEND BAR */
+  .legend-bar {
+    display: flex; flex-wrap: wrap; gap: 20px;
+    padding: 12px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-size: 12px; color: var(--muted);
+  }
+  .li { display: flex; align-items: center; gap: 7px; }
+  .ld { width: 9px; height: 9px; border-radius: 50%; }
+
+  /* WEEK STRIP */
+  .week-strip {
+    display: grid; grid-template-columns: repeat(7,1fr); gap: 6px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .wd {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 9px 4px; text-align: center; cursor: pointer; transition: all .2s;
+  }
+  .wd:hover { border-color: #444; }
+  .wd.active-sport { border-color: var(--accent); background: rgba(232,245,66,.06); }
+  .wd.active-rest { border-color: var(--accent2); background: rgba(66,245,161,.06); }
+  .wd.active-full { border-color: var(--muted); background: rgba(122,127,142,.06); }
+  .wd-day { font-family: 'Syne', sans-serif; font-size: 9px; font-weight: 700; color: var(--muted); letter-spacing: .5px; }
+  .wd-icon { font-size: 16px; margin: 3px 0; }
+  .wd-type { font-size: 8px; font-weight: 600; margin-top: 2px; }
+  .wd.active-sport .wd-type { color: var(--accent); }
+  .wd.active-rest .wd-type, .wd .wd-type-rest { color: var(--accent2); }
+  .wd .wd-type-sport { color: var(--accent); }
+  .wd .wd-type-full { color: var(--muted); }
+  @media(max-width:480px){
+    .week-strip{gap:3px;padding:10px;}
+    .wd{padding:6px 2px;}
+    .wd-icon{font-size:13px;}
+  }
+
+  /* TABS */
+  .tabs { display:flex; overflow-x:auto; scrollbar-width:none; background:var(--surface); border-bottom:1px solid var(--border); padding:0 20px; }
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab-btn { background:none; border:none; color:var(--muted); font-family:'Syne',sans-serif; font-size:11px; font-weight:700; padding:13px 14px; cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:all .2s; letter-spacing:.4px; }
+  .tab-btn:hover{color:var(--text);}
+  .tab-btn.act{color:var(--accent);border-bottom-color:var(--accent);}
+  .tab-btn.act-rest{color:var(--accent2);border-bottom-color:var(--accent2);}
+  .tab-btn .sub{display:block;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:400;opacity:.7;margin-top:1px;letter-spacing:0;}
+
+  /* CONTENT */
+  .content{max-width:860px;margin:0 auto;padding:24px 20px 60px;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  /* DAY HEADER */
+  .day-hd{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .day-badge{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .db-sport{background:var(--accent);color:#0d0e10;}
+  .db-rest{background:var(--accent2);color:#0d0e10;}
+  .db-full{background:var(--muted);color:#fff;}
+  .day-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;}
+  .day-sub{color:var(--muted);font-size:12px;margin-top:2px;}
+
+  /* INFO BANNERS */
+  .banner{border-radius:10px;padding:11px 14px;margin-bottom:16px;font-size:13px;line-height:1.5;display:flex;align-items:flex-start;gap:10px;}
+  .bn-green{background:rgba(66,245,161,.07);border:1px solid rgba(66,245,161,.2);color:var(--accent2);}
+  .bn-orange{background:rgba(245,130,74,.07);border:1px solid rgba(245,130,74,.2);color:var(--accent3);}
+  .bn-blue{background:rgba(123,140,255,.07);border:1px solid rgba(123,140,255,.2);color:var(--accent4);}
+
+  /* TIMING SUMMARY */
+  .timing-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+  .timing-chip{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;display:flex;align-items:center;gap:7px;}
+  .timing-chip .tc-icon{font-size:15px;}
+  .timing-chip .tc-label{color:var(--muted);font-size:10px;display:block;}
+  .timing-chip .tc-val{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text);}
+
+  /* EXERCISE CARD */
+  .ex-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;cursor:pointer;transition:border-color .2s;}
+  .ex-card:hover{border-color:#444;}
+  .ex-card.open{border-color:var(--accent);}
+
+  .ex-top{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:14px;}
+  .ex-ico{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+  .ex-name{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;line-height:1.2;}
+  .ex-meta{color:var(--muted);font-size:11px;margin-top:3px;}
+  .ex-badge-wrap{display:flex;align-items:center;gap:6px;}
+  .ex-badge{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:4px 9px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--accent);white-space:nowrap;}
+  .chev{color:var(--muted);font-size:14px;transition:transform .2s;}
+  .ex-card.open .chev{transform:rotate(180deg);}
+
+  /* SETS TABLE */
+  .ex-body{display:none;border-top:1px solid var(--border);}
+  .ex-card.open .ex-body{display:block;}
+
+  .sets-section{padding:14px 14px 4px;}
+  .sets-section h4{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+
+  .sets-table{width:100%;border-collapse:collapse;}
+  .sets-table th{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:0 8px 8px;text-align:center;}
+  .sets-table th:first-child{text-align:left;}
+  .sets-table td{padding:8px;text-align:center;font-size:13px;border-top:1px solid var(--border);}
+  .sets-table td:first-child{text-align:left;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;}
+  .sets-table tr:last-child td{border-bottom:none;}
+
+  .rep-val{font-family:'Syne',sans-serif;font-weight:700;color:var(--accent);}
+  .rep-note{font-size:10px;color:var(--muted);display:block;margin-top:1px;}
+
+  .rest-chip{display:inline-flex;align-items:center;gap:4px;background:rgba(123,140,255,.12);border:1px solid rgba(123,140,255,.25);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--accent4);font-weight:600;}
+  .rest-chip-y{background:rgba(232,245,66,.1);border-color:rgba(232,245,66,.25);color:var(--accent);}
+
+  /* REST BETWEEN EXERCISES */
+  .ex-rest-row{display:flex;align-items:center;gap:10px;padding:8px 14px;border-top:1px solid var(--border);}
+  .ex-rest-row span{font-size:12px;color:var(--muted);}
+  .ex-rest-val{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--accent3);}
+
+  /* DETAIL BLOCKS */
+  .detail-section{padding:4px 14px 16px;}
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:8px;}
+  @media(max-width:480px){
+    .detail-grid{grid-template-columns:1fr;}
+    .ex-top{grid-template-columns:38px 1fr;}
+    .ex-badge-wrap .ex-badge{display:none;}
+  }
+  .db{background:var(--bg);border-radius:9px;padding:10px 12px;}
+  .db h5{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:5px;}
+  .db p{font-size:12px;line-height:1.5;}
+  .muscles{display:flex;flex-wrap:wrap;gap:5px;margin:10px 14px 0;}
+  .mtag{background:rgba(232,245,66,.1);border:1px solid rgba(232,245,66,.25);color:var(--accent);font-size:10px;padding:2px 9px;border-radius:100px;}
+  .tip{background:rgba(66,245,161,.07);border:1px solid rgba(66,245,161,.2);border-radius:9px;padding:10px 13px;margin:10px 14px 14px;font-size:12px;line-height:1.5;color:var(--accent2);}
+
+  /* DIVIDER between exercises */
+  .ex-sep{height:1px;background:transparent;margin:0;}
+
+  /* REST CARD */
+  .rest-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px;}
+  .rest-card h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px;color:var(--accent2);}
+  .rest-list{list-style:none;}
+  .rest-list li{padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;gap:9px;align-items:flex-start;}
+  .rest-list li:last-child{border-bottom:none;}
+  .ri{font-size:15px;flex-shrink:0;margin-top:1px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <h1>Séances <span>Détaillées</span><br>J92 → J98</h1>
+    <div class="pills">
+      <div class="pill pill-y">21–27 AVRIL 2026</div>
+      <div class="pill pill-o">VERSION OPTIMISÉE</div>
+      <div class="pill pill-b">DÉBUTANT · 30–40 MIN</div>
+    </div>
+  </div>
+  <p class="subtitle">Reps par série · Temps de repos · Conseils technique — clique sur un exercice</p>
+</header>
+
+<div class="legend-bar">
+  <div class="li"><div class="ld" style="background:var(--accent)"></div>Jour sport</div>
+  <div class="li"><div class="ld" style="background:var(--accent2)"></div>Repos actif</div>
+  <div class="li"><div class="ld" style="background:var(--muted)"></div>Repos complet</div>
+  <div class="li"><div class="ld" style="background:var(--accent4)"></div>Repos entre séries</div>
+  <div class="li"><div class="ld" style="background:var(--accent3)"></div>Repos entre exercices</div>
+</div>
+
+<div class="week-strip">
+  <div class="wd active-sport" data-d="j92" onclick="sw('j92')"><div class="wd-day">LUN</div><div class="wd-icon">💪</div><div class="wd-type wd-type-sport">HAUT A</div></div>
+  <div class="wd" data-d="j93" onclick="sw('j93')"><div class="wd-day">MAR</div><div class="wd-icon">🦵</div><div class="wd-type wd-type-sport">BAS A</div></div>
+  <div class="wd" data-d="j94" onclick="sw('j94')"><div class="wd-day">MER</div><div class="wd-icon">🚶</div><div class="wd-type wd-type-rest">REPOS+</div></div>
+  <div class="wd" data-d="j95" onclick="sw('j95')"><div class="wd-day">JEU</div><div class="wd-icon">💪</div><div class="wd-type wd-type-sport">HAUT B</div></div>
+  <div class="wd" data-d="j96" onclick="sw('j96')"><div class="wd-day">VEN</div><div class="wd-icon">🦵</div><div class="wd-type wd-type-sport">BAS B</div></div>
+  <div class="wd" data-d="j97" onclick="sw('j97')"><div class="wd-day">SAM</div><div class="wd-icon">🚶</div><div class="wd-type wd-type-rest">REPOS+</div></div>
+  <div class="wd" data-d="j98" onclick="sw('j98')"><div class="wd-day">DIM</div><div class="wd-icon">😴</div><div class="wd-type wd-type-full">REPOS</div></div>
+</div>
+
+<nav class="tabs">
+  <button class="tab-btn act" data-d="j92">Lun – Haut A<span class="sub">💪 Poussé</span></button>
+  <button class="tab-btn" data-d="j93">Mar – Bas A<span class="sub">🦵 Quad+Fessiers</span></button>
+  <button class="tab-btn" data-d="j94">Mer – Repos<span class="sub">🚶 Marche</span></button>
+  <button class="tab-btn" data-d="j95">Jeu – Haut B<span class="sub">💪 Tirage</span></button>
+  <button class="tab-btn" data-d="j96">Ven – Bas B<span class="sub">🦵 Ischio</span></button>
+  <button class="tab-btn" data-d="j97">Sam – Repos<span class="sub">🚶 Marche</span></button>
+  <button class="tab-btn" data-d="j98">Dim – Repos<span class="sub">😴 Récup.</span></button>
+</nav>
+
+<div class="content">
+
+  <div class="panel active" id="j92"></div>
+  <div class="panel" id="j93"></div>
+
+  <!-- J94 static -->
+  <div class="panel" id="j94">
+    <div class="day-hd">
+      <div class="day-badge db-rest">J94</div>
+      <div><div class="day-title">Repos Actif — Marche & Mobilité</div><div class="day-sub">Mercredi 23 avril • ~2 050–2 100 kcal</div></div>
+    </div>
+    <div class="rest-card">
+      <h3>🚶 Programme</h3>
+      <ul class="rest-list">
+        <li><span class="ri">🏃</span><span><strong>Marche 30–45 min allure modérée</strong> — Pas de cardio intense. Circulation sanguine pour récupérer lun/mar.</span></li>
+        <li><span class="ri">🤸</span><span><strong>Mobilité 15–20 min</strong> — Rotations épaules, chat-vache, fente basse 30s/côté, étirement ischio 30s/jambe, torsion dorsale.</span></li>
+        <li><span class="ri">⛔</span><span>Pas de musculation ce jour.</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel" id="j95"></div>
+  <div class="panel" id="j96"></div>
+
+  <!-- J97 static -->
+  <div class="panel" id="j97">
+    <div class="day-hd">
+      <div class="day-badge db-rest">J97</div>
+      <div><div class="day-title">Repos Actif — Marche longue</div><div class="day-sub">Samedi 26 avril • ~2 050–2 100 kcal</div></div>
+    </div>
+    <div class="rest-card">
+      <h3>🚶 Programme</h3>
+      <ul class="rest-list">
+        <li><span class="ri">🏃</span><span><strong>Marche 45–60 min</strong> — Plus longue que mercredi. En extérieur idéalement.</span></li>
+        <li><span class="ri">🤸</span><span><strong>Étirements 20 min</strong> — Insistez sur les jambes (vendredi) et le dos (jeudi).</span></li>
+        <li><span class="ri">⛔</span><span>Pas de musculation.</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- J98 static -->
+  <div class="panel" id="j98">
+    <div class="day-hd">
+      <div class="day-badge db-full">J98</div>
+      <div><div class="day-title">Repos Complet</div><div class="day-sub">Dimanche 27 avril • ~2 050 kcal</div></div>
+    </div>
+    <div class="rest-card">
+      <h3>😴 Priorités</h3>
+      <ul class="rest-list">
+        <li><span class="ri">💤</span><span><strong>Sommeil prioritaire</strong> — C'est ici que les muscles se reconstruisent et se renforcent.</span></li>
+        <li><span class="ri">📊</span><span><strong>Bilan Renpho recommandé</strong> — Matin à jeun, mêmes conditions.</span></li>
+        <li><span class="ri">⛔</span><span>Aucune séance, pas de marche intensive.</span></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Data: each exercise has sets array with reps + rest between sets (seconds), rest_after = rest before next exercise
+const days = {
+  j92: {
+    title:"Haut du corps A — Poussé + Épaules",
+    sub:"Lundi 21 avril • ~2 380 kcal",
+    badge:"J92", badgeClass:"db-sport",
+    totalTime:"~35 min",
+    banner:{type:"bn-green", text:"✅ <strong>Récupération optimale :</strong> 48h avant le Haut B (jeudi) — muscles frais à chaque séance"},
+    exercises:[
+      {
+        name:"Développé haltères", icon:"🏋️", color:"#e8f54222",
+        muscles:["Pectoraux","Triceps","Avant des épaules"],
+        sets:[
+          {num:1, reps:12, note:"Poids léger — trouver la bonne charge", restAfterSet:75},
+          {num:2, reps:11, note:"Maintenir la forme même si c'est dur", restAfterSet:75},
+          {num:3, reps:10, note:"Descente 3 sec, montée 1 sec", restAfterSet:null}
+        ],
+        restAfterExo:100,
+        position:"Allongé sur le banc, dos à plat, pieds au sol. Haltères à hauteur des épaules.",
+        execution:"Coudes à 45° du corps. Poussez vers le haut jusqu'à presque extension, redescendez lentement 2–3 sec jusqu'à l'étirement des pecs.",
+        erreurs:"Coudes pas à 90° (risque épaule). Omoplates serrées et plaquées. Ne verrouillez pas les coudes.",
+        tip:"S1 à poids léger pour calibrer. Si la S3 est trop facile, augmentez le poids la prochaine séance."
+      },
+      {
+        name:"Développé épaules haltères", icon:"⬆️", color:"#f5824a22",
+        muscles:["Deltoïde antérieur","Deltoïde latéral","Triceps"],
+        sets:[
+          {num:1, reps:12, note:"Dos droit, ne pas cambrer", restAfterSet:75},
+          {num:2, reps:11, note:"Coudes légèrement devant le plan du corps", restAfterSet:75},
+          {num:3, reps:10, note:"Contrôler la descente", restAfterSet:null}
+        ],
+        restAfterExo:100,
+        position:"Assis sur le banc, dos droit. Haltères à hauteur des épaules, paumes vers l'avant.",
+        execution:"Poussez vers le haut jusqu'à ce que les haltères se rejoignent presque. Redescendez lentement à hauteur d'oreilles.",
+        erreurs:"Ne creusez pas les lombaires (rentrez le nombril). Ne descendez pas sous les épaules.",
+        tip:"Tournez légèrement les poignets (pouce vers l'avant) pour protéger les épaules — version 'Arnold press'."
+      },
+      {
+        name:"Élévations latérales", icon:"🦅", color:"#42f5a122",
+        muscles:["Deltoïde latéral"],
+        sets:[
+          {num:1, reps:12, note:"Poids très léger — technique avant tout", restAfterSet:60},
+          {num:2, reps:12, note:"Descente sur 3 sec minimum", restAfterSet:60},
+          {num:3, reps:12, note:"Brûlement normal — bon signe !", restAfterSet:null}
+        ],
+        restAfterExo:100,
+        position:"Debout, haltères légers, légère flexion du coude, bras le long du corps.",
+        execution:"Levez les bras latéralement jusqu'à hauteur des épaules. Pouce légèrement vers le bas. Redescendez lentement 3 sec.",
+        erreurs:"Ne montez pas au-dessus de l'horizontale. Pas d'élan avec le buste.",
+        tip:"Exercice isolation : 3–5 kg suffisent largement. La qualité prime sur le poids ici."
+      },
+      {
+        name:"Extension triceps", icon:"🔼", color:"#e8f54222",
+        muscles:["Triceps brachial"],
+        sets:[
+          {num:1, reps:12, note:"Coudes proches des oreilles, fixes", restAfterSet:60},
+          {num:2, reps:12, note:"Extension complète en haut", restAfterSet:60},
+          {num:3, reps:12, note:"Contrôler la descente derrière la nuque", restAfterSet:null}
+        ],
+        restAfterExo:100,
+        position:"Assis sur le banc. Un haltère à deux mains au-dessus de la tête, bras tendus.",
+        execution:"Fléchissez les coudes pour descendre le haltère derrière la nuque. Coudes vers le plafond. Remontez en extension complète.",
+        erreurs:"Les coudes ne s'écartent pas. Pas de mouvement des épaules.",
+        tip:"Plus stable en position assise. Si trop lourd, un seul haltère léger à deux mains convient."
+      },
+      {
+        name:"Gainage planche", icon:"📐", color:"#7b8cff22",
+        muscles:["Transverse","Obliques","Lombaires"],
+        sets:[
+          {num:1, reps:"30 sec", note:"Contractez ventre + fessiers", restAfterSet:60},
+          {num:2, reps:"35 sec", note:"Respirez normalement", restAfterSet:60},
+          {num:3, reps:"40 sec", note:"Progression de 5 sec par série", restAfterSet:null}
+        ],
+        restAfterExo:null,
+        position:"Avant-bras au sol, coudes sous les épaules. Corps en ligne droite tête–talons.",
+        execution:"Contractez ventre + fessiers. Regardez 30cm devant vous. Maintenez sans bouger les hanches.",
+        erreurs:"Hanches en chapeau pointu ou dos creux. Retenir sa respiration.",
+        tip:"Si 30 sec est trop long, commencez à 20 sec et augmentez chaque semaine. Genoux au sol si besoin."
+      }
+    ]
+  },
+  j93: {
+    title:"Bas du corps A — Quadriceps + Fessiers",
+    sub:"Mardi 22 avril • ~2 380–2 420 kcal",
+    badge:"J93", badgeClass:"db-sport",
+    totalTime:"~35 min",
+    banner:{type:"bn-green", text:"✅ <strong>48h de récupération</strong> pour le haut du corps avant jeudi"},
+    exercises:[
+      {
+        name:"Squat gobelet haltère", icon:"🏋️", color:"#e8f54222",
+        muscles:["Quadriceps","Fessiers","Ischio-jambiers"],
+        sets:[
+          {num:1, reps:15, note:"S1 : trouver l'équilibre et la profondeur", restAfterSet:90},
+          {num:2, reps:13, note:"Cuisses parallèles au sol minimum", restAfterSet:90},
+          {num:3, reps:12, note:"Pousser dans les talons pour remonter", restAfterSet:null}
+        ],
+        restAfterExo:120,
+        position:"Debout, pieds largeur d'épaules, orteils légèrement ouverts. Haltère vertical contre la poitrine.",
+        execution:"Descendez en pliant les genoux, genoux dans l'axe des orteils. Cuisses parallèles. Poussez dans les talons pour remonter.",
+        erreurs:"Genoux vers l'intérieur. Dos arrondi. Talons décollés.",
+        tip:"Le contrepoids devant force naturellement le buste droit — idéal pour apprendre le mouvement."
+      },
+      {
+        name:"Fentes marchées", icon:"🚶", color:"#42f5a122",
+        muscles:["Quadriceps","Fessiers","Mollets"],
+        sets:[
+          {num:1, reps:"10/côté", note:"Sans haltères d'abord pour trouver l'équilibre", restAfterSet:90},
+          {num:2, reps:"10/côté", note:"Ajouter haltères si S1 était stable", restAfterSet:90},
+          {num:3, reps:"10/côté", note:"Genou arrière frôle le sol", restAfterSet:null}
+        ],
+        restAfterExo:120,
+        position:"Debout, haltères en mains ou mains libres, dos droit.",
+        execution:"Grand pas en avant, descendez genou arrière vers le sol. Genou avant ne dépasse pas l'orteil. Avancez l'autre pied et alternez.",
+        erreurs:"Genou avant vers l'intérieur. Tronc penché. Pas trop court.",
+        tip:"Si l'équilibre est difficile, commencez par des fentes statiques avant de marcher."
+      },
+      {
+        name:"Soulevé de terre roumain", icon:"⬇️", color:"#f5824a22",
+        muscles:["Ischio-jambiers","Fessiers","Lombaires"],
+        sets:[
+          {num:1, reps:12, note:"Poids modéré — ressentir l'étirement", restAfterSet:90},
+          {num:2, reps:11, note:"Dos plat tout au long du mouvement", restAfterSet:90},
+          {num:3, reps:10, note:"Hanches vers l'arrière pour initier", restAfterSet:null}
+        ],
+        restAfterExo:120,
+        position:"Debout, haltères devant les cuisses, genoux légèrement fléchis et fixes.",
+        execution:"Penchez le buste en poussant les hanches vers l'arrière. Descendez jusqu'à mi-tibia. Remontez en contractant les fessiers.",
+        erreurs:"Ne pas arrondir le dos. Ne pas fléchir davantage les genoux (≠ squat).",
+        tip:"Pensez 'hanches vers le mur derrière vous' pour initier correctement."
+      },
+      {
+        name:"Pont fessier lesté", icon:"🌉", color:"#e8f54222",
+        muscles:["Grand fessier","Ischio-jambiers"],
+        sets:[
+          {num:1, reps:15, note:"Haltère sur les hanches, maintien 1 sec en haut", restAfterSet:75},
+          {num:2, reps:13, note:"Serrez fort les fessiers en haut", restAfterSet:75},
+          {num:3, reps:12, note:"Descente lente 2–3 sec", restAfterSet:null}
+        ],
+        restAfterExo:100,
+        position:"Allongé sur le dos, genoux à 90°, pieds à plat. Haltère sur les hanches.",
+        execution:"Poussez sur les talons pour monter les hanches en ligne épaules–hanches–genoux. Serrez en haut, descendez lentement.",
+        erreurs:"Mouvement des hanches, pas du dos. Genoux stables.",
+        tip:"Pieds sur le banc pour plus d'amplitude et plus de travail fessier (pont surélevé)."
+      },
+      {
+        name:"Mollets debout", icon:"🦵", color:"#42f5a122",
+        muscles:["Gastrocnémien","Soléaire"],
+        sets:[
+          {num:1, reps:20, note:"Orteils sur le banc pour plus d'amplitude", restAfterSet:60},
+          {num:2, reps:18, note:"Maintenir 1 sec en haut", restAfterSet:60},
+          {num:3, reps:15, note:"Étirement complet en bas à chaque rep", restAfterSet:null}
+        ],
+        restAfterExo:null,
+        position:"Debout, orteils sur le bord du banc ou un livre. Haltère dans une main (optionnel).",
+        execution:"Montez sur la pointe des pieds le plus haut possible. Maintenez 1 sec. Redescendez en dessous du niveau de départ.",
+        erreurs:"Mouvement trop rapide. Pas d'étirement complet en bas.",
+        tip:"Amplitude maximale = clé. Lenteur avec étirement vaut mieux que vitesse sans course."
+      }
+    ]
+  },
+  j95: {
+    title:"Haut du corps B — Tirage + Biceps",
+    sub:"Jeudi 24 avril • ~2 380 kcal",
+    badge:"J95", badgeClass:"db-sport",
+    totalTime:"~35 min",
+    banner:{type:"bn-green", text:"✅ <strong>48h depuis le Haut A (lundi)</strong> — pectoraux et épaules reposés, prêts pour le dos et biceps"},
+    exercises:[
+      {
+        name:"Tractions barre (assistées si besoin)", icon:"🏅", color:"#42f5a122",
+        muscles:["Grand dorsal","Biceps","Trapèzes"],
+        sets:[
+          {num:1, reps:"6–8", note:"Prise large, mains vers l'extérieur. Jambes croisées si besoin d'élan léger.", restAfterSet:90},
+          {num:2, reps:"5–7", note:"Montez jusqu'au menton au-dessus de la barre", restAfterSet:90},
+          {num:3, reps:"4–6", note:"Descente lente 3 sec — plus efficace que la montée", restAfterSet:null}
+        ],
+        restAfterExo:120,
+        position:"Suspendu à la barre de traction, prise en pronation (paumes vers l'avant), largeur d'épaules ou plus.",
+        execution:"Tirez le buste vers la barre en ramenant les coudes vers les hanches. Chin au-dessus de la barre. Redescendez lentement.",
+        erreurs:"Ne vous balancez pas. Ne verrouillez pas les coudes en bas. Épaules actives (pas relâchées).",
+        tip:"Si trop difficile : utilisez un élastique sous les pieds pour l'assistance, ou remplacez par du rowing haltère."
+      },
+      {
+        name:"Rowing haltère un bras", icon:"🚣", color:"#e8f54222",
+        muscles:["Grand dorsal","Rhomboïdes","Trapèzes","Biceps"],
+        sets:[
+          {num:1, reps:12, note:"Initiez avec l'omoplate, pas le bras", restAfterSet:75},
+          {num:2, reps:11, note:"Coude proche du corps, vers la hanche", restAfterSet:75},
+          {num:3, reps:10, note:"Descente complète, bras tendu en bas", restAfterSet:null}
+        ],
+        restAfterExo:100,
+        position:"Genou et main d'appui sur le banc. Corps horizontal, dos droit. Haltère dans la main libre.",
+        execution:"Tirez le haltère vers la hanche, coude proche du corps. Initiez en rétractant l'omoplate. Descente contrôlée.",
+        erreurs:"Ne pivotez pas le tronc pour tricher. Initiez avec l'omoplate.",
+        tip:"Pensez 'mettre le coude dans ma poche arrière' — ça oriente parfaitement le mouvement."
+      },
+      {
+        name:"Tirage élastique horizontal", icon:"↔️", color:"#f5824a22",
+        muscles:["Trapèzes moyens","Rhomboïdes","Arrière des épaules"],
+        sets:[
+          {num:1, reps:12, note:"Serrez les omoplates ensemble en fin de mouvement", restAfterSet:60},
+          {num:2, reps:12, note:"Maintenez 1 sec la contraction en fin de course", restAfterSet:60},
+          {num:3, reps:12, note:"Descente lente et contrôlée", restAfterSet:null}
+        ],
+        restAfterExo:100,
+        position:"Assis, élastique fixé à hauteur de poitrine devant vous (pied de table, chandelle). Dos droit.",
+        execution:"Tirez en ramenant les coudes en arrière et en serrant les omoplates. Maintenez 1 sec, relâchez lentement.",
+        erreurs:"Pas que les bras — initiez par les omoplates. Épaules ne montent pas vers les oreilles.",
+        tip:"La chandelle est parfaite pour fixer l'élastique à différentes hauteurs — adaptez au niveau des épaules."
+      },
+      {
+        name:"Curl biceps haltères", icon:"💪", color:"#42f5a122",
+        muscles:["Biceps brachial","Brachial antérieur"],
+        sets:[
+          {num:1, reps:12, note:"Coudes fixes aux flancs — ne bougent pas", restAfterSet:60},
+          {num:2, reps:12, note:"Serrez fort en haut de la contraction", restAfterSet:60},
+          {num:3, reps:12, note:"Extension complète en bas à chaque rep", restAfterSet:null}
+        ],
+        restAfterExo:100,
+        position:"Debout ou assis, dos droit, coudes collés aux flancs, paumes vers l'avant.",
+        execution:"Fléchissez les coudes vers les épaules. Serrez en haut. Redescendez sur 2–3 sec jusqu'à extension complète.",
+        erreurs:"Coudes qui avancent ou s'écartent. Balancement du dos.",
+        tip:"Essayez alternez bras droit / gauche pour une légère rotation du poignet (supination) qui améliore la contraction."
+      },
+      {
+        name:"Gainage planche", icon:"📐", color:"#7b8cff22",
+        muscles:["Transverse","Obliques","Lombaires"],
+        sets:[
+          {num:1, reps:"35 sec", note:"Progressez de 5 sec vs lundi", restAfterSet:60},
+          {num:2, reps:"40 sec", note:"Ventre + fessiers contractés", restAfterSet:60},
+          {num:3, reps:"40 sec", note:"Respirez normalement", restAfterSet:null}
+        ],
+        restAfterExo:null,
+        position:"Avant-bras au sol, corps en ligne droite.",
+        execution:"Contractez ventre + fessiers. Regardez 30cm devant. Respirez normalement.",
+        erreurs:"Hanches qui bougent. Apnée.",
+        tip:"2e fois de la semaine — essayez de tenir 5 sec de plus par rapport à lundi."
+      }
+    ]
+  },
+  j96: {
+    title:"Bas du corps B — Ischio-jambiers + Mollets",
+    sub:"Vendredi 25 avril • ~2 380 kcal",
+    badge:"J96", badgeClass:"db-sport",
+    totalTime:"~32 min",
+    banner:{type:"bn-green", text:"✅ <strong>48h depuis le Bas A (mardi)</strong> — quadriceps et fessiers reposés"},
+    exercises:[
+      {
+        name:"Soulevé de terre roumain", icon:"⬇️", color:"#f5824a22",
+        muscles:["Ischio-jambiers","Fessiers","Lombaires"],
+        sets:[
+          {num:1, reps:12, note:"Même charge ou +2 kg vs mardi si récup OK", restAfterSet:90},
+          {num:2, reps:11, note:"Dos plat, hanches vers l'arrière", restAfterSet:90},
+          {num:3, reps:10, note:"Contraction fessiers en remontant", restAfterSet:null}
+        ],
+        restAfterExo:120,
+        position:"Debout, haltères devant les cuisses, genoux légèrement fléchis et fixes.",
+        execution:"Poussez les hanches vers l'arrière, descendez jusqu'à sentir l'étirement des ischio. Remontez en contractant les fessiers.",
+        erreurs:"Dos arrondi. Genoux qui fléchissent davantage. Ne descendez pas trop si mobilité limitée.",
+        tip:"48h depuis mardi — vous devriez être plus fort. C'est le moment de monter légèrement la charge."
+      },
+      {
+        name:"Fentes statiques", icon:"🧍", color:"#42f5a122",
+        muscles:["Quadriceps","Fessiers","Ischio-jambiers"],
+        sets:[
+          {num:1, reps:"10/côté", note:"Stabilité avant tout — haltères légers", restAfterSet:90},
+          {num:2, reps:"10/côté", note:"Genou arrière frôle le sol", restAfterSet:90},
+          {num:3, reps:"10/côté", note:"Ne vous penchez pas en avant", restAfterSet:null}
+        ],
+        restAfterExo:120,
+        position:"Debout, un pied en avant. Haltères en mains ou mains libres.",
+        execution:"Descendez verticalement, genou arrière vers le sol. Remontez sur le même pied. Toute la série d'un côté, puis changez.",
+        erreurs:"Genou avant dépasse trop les orteils (raccourcissez le pas). Tronc penché.",
+        tip:"Plus stable que les fentes marchées — parfait en fin de semaine quand la fatigue s'accumule."
+      },
+      {
+        name:"Leg curl élastique", icon:"↩️", color:"#e8f54222",
+        muscles:["Ischio-jambiers (flexion genou)"],
+        sets:[
+          {num:1, reps:12, note:"Cuisse verticale et immobile", restAfterSet:75},
+          {num:2, reps:12, note:"Maintenir 1 sec talon vers les fessiers", restAfterSet:75},
+          {num:3, reps:12, note:"Extension complète en bas", restAfterSet:null}
+        ],
+        restAfterExo:100,
+        position:"Debout, élastique à la cheville, fixé devant à hauteur basse (chandelle ou pied de meuble). Appui mural.",
+        execution:"Fléchissez le genou pour ramener le talon vers les fessiers. Cuisse immobile. Descente lente.",
+        erreurs:"La cuisse qui remonte. Cambre du dos. Pas d'extension complète en bas.",
+        tip:"Sans élastique : remplacez par des ponts fessiers unilatéraux jambe tendue — très efficace aussi."
+      },
+      {
+        name:"Mollets assis (kettlebell/haltère)", icon:"💺", color:"#f5824a22",
+        muscles:["Soléaire (mollet profond)"],
+        sets:[
+          {num:1, reps:20, note:"Kettlebell ou haltère sur les genoux", restAfterSet:60},
+          {num:2, reps:18, note:"Amplitude max — étirement en bas", restAfterSet:60},
+          {num:3, reps:15, note:"Maintenir 1 sec en haut", restAfterSet:null}
+        ],
+        restAfterExo:100,
+        position:"Assis sur le banc, orteils sur un livre/marche. Kettlebell ou haltère sur les genoux.",
+        execution:"Soulevez les talons le plus haut possible. Maintenez 1 sec. Redescendez lentement avec amplitude complète.",
+        erreurs:"Mouvement trop rapide. Pas d'étirement complet.",
+        tip:"Le kettlebell sur les genoux est idéal pour ce mouvement — son poids est bien centré."
+      },
+      {
+        name:"Gainage latéral", icon:"↗️", color:"#7b8cff22",
+        muscles:["Obliques","Carré des lombes","Abducteurs"],
+        sets:[
+          {num:1, reps:"30 sec/côté", note:"Corps en ligne droite, bassin haut", restAfterSet:60},
+          {num:2, reps:"30 sec/côté", note:"Ne laissez pas les hanches descendre", restAfterSet:60},
+          {num:3, reps:"30 sec/côté", note:"Variante : lever le pied supérieur", restAfterSet:null}
+        ],
+        restAfterExo:null,
+        position:"Sur le côté, appui sur l'avant-bras. Corps en ligne droite tête–pieds.",
+        execution:"Soulevez les hanches pour aligner tout le corps. Bassin haut et stable. Respirez.",
+        erreurs:"Hanches qui s'affaissent. Rotation du bassin vers le sol.",
+        tip:"Pour progresser : levez le pied supérieur en l'air pendant toute la durée — demande beaucoup plus de stabilisation."
+      }
+    ]
+  }
+};
+
+function buildPanel(dayId) {
+  const d = days[dayId];
+  if (!d) return;
+  const panel = document.getElementById(dayId);
+
+  let exHtml = d.exercises.map((ex, ei) => {
+    // Build sets rows
+    let setsRows = ex.sets.map(s => {
+      const restCell = s.restAfterSet
+        ? `<span class="rest-chip">⏱ ${s.restAfterSet}s</span>`
+        : `<span style="color:var(--muted);font-size:11px">— fin</span>`;
+      return `<tr>
+        <td>Série ${s.num}</td>
+        <td><span class="rep-val">${s.reps}</span>${s.note ? `<span class="rep-note">${s.note}</span>` : ''}</td>
+        <td>${restCell}</td>
+      </tr>`;
+    }).join('');
+
+    const exoRest = ex.restAfterExo
+      ? `<div class="ex-rest-row"><span>⏸ Repos avant prochain exercice :</span><span class="ex-rest-val">${ex.restAfterExo} sec (~${Math.round(ex.restAfterExo/60)} min 30)</span></div>`
+      : '';
+
+    return `
+      <div class="ex-card" onclick="toggle(this)">
+        <div class="ex-top">
+          <div class="ex-ico" style="background:${ex.color}">${ex.icon}</div>
+          <div>
+            <div class="ex-name">${ex.name}</div>
+            <div class="ex-meta">${ex.sets.length} séries · ${ex.muscles[0]}</div>
+          </div>
+          <div class="ex-badge-wrap">
+            <div class="ex-badge">${ex.sets[0].reps} rép</div>
+            <span class="chev">▾</span>
+          </div>
+        </div>
+        <div class="ex-body">
+          <div class="muscles">${ex.muscles.map(m=>`<span class="mtag">${m}</span>`).join('')}</div>
+          <div class="sets-section">
+            <h4>📊 Détail des séries</h4>
+            <table class="sets-table">
+              <thead><tr><th>Série</th><th>Répétitions</th><th>Repos après</th></tr></thead>
+              <tbody>${setsRows}</tbody>
+            </table>
+          </div>
+          ${exoRest}
+          <div class="detail-section">
+            <div class="detail-grid">
+              <div class="db"><h5>📍 Position</h5><p>${ex.position}</p></div>
+              <div class="db"><h5>▶️ Exécution</h5><p>${ex.execution}</p></div>
+              <div class="db" style="grid-column:1/-1"><h5>⚠️ Erreurs</h5><p>${ex.erreurs}</p></div>
+            </div>
+          </div>
+          <div class="tip">💡 ${ex.tip}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <div class="banner ${d.banner.type}">${d.banner.text}</div>
+    <div class="day-hd">
+      <div class="day-badge ${d.badgeClass}">${d.badge}</div>
+      <div><div class="day-title">${d.title}</div><div class="day-sub">${d.sub}</div></div>
+    </div>
+    <div class="timing-row">
+      <div class="timing-chip"><span class="tc-icon">⏱</span><div><span class="tc-label">Durée totale</span><span class="tc-val">${d.totalTime}</span></div></div>
+      <div class="timing-chip"><span class="tc-icon">🔵</span><div><span class="tc-label">Repos entre séries</span><span class="tc-val">60–90 sec</span></div></div>
+      <div class="timing-chip"><span class="tc-icon">🟠</span><div><span class="tc-label">Repos entre exercices</span><span class="tc-val">90–120 sec</span></div></div>
+    </div>
+    ${exHtml}`;
+}
+
+['j92','j93','j95','j96'].forEach(buildPanel);
+
+function toggle(card){ card.classList.toggle('open'); }
+
+function sw(day) {
+  document.querySelectorAll('.wd').forEach(w => w.className = w.className.replace(/ active-\w+/g,''));
+  document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('act'); b.classList.remove('act-rest'); });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+
+  const wd = document.querySelector(`.wd[data-d="${day}"]`);
+  const tb = document.querySelector(`.tab-btn[data-d="${day}"]`);
+  const panel = document.getElementById(day);
+  if (!wd || !tb || !panel) return;
+
+  if (['j94','j97','j98'].includes(day)) {
+    wd.classList.add('active-rest');
+    tb.classList.add('act-rest');
+  } else {
+    wd.classList.add('active-sport');
+    tb.classList.add('act');
+  }
+  panel.classList.add('active');
+}
+
+document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => sw(b.dataset.d)));
+</script>
+</body>
+</html>
